@@ -13,6 +13,7 @@ AFountain::AFountain()
 	Water = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WATER"));
 	Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("LIGHT"));
 	Splash = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SPLASH"));
+	Movement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("MOVEMENT"));
 
 	RootComponent = Body;
 	Water->SetupAttachment(Body);
@@ -34,19 +35,36 @@ AFountain::AFountain()
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> PS_SPLASH(TEXT("/Game/InfinityBladeGrassLands/Effects/FX_Ambient/Water/P_Water_Fountain_Splash_Base_01.P_Water_Fountain_Splash_Base_01"));
 	if (PS_SPLASH.Succeeded())
 		Splash->SetTemplate(PS_SPLASH.Object);
+
+	RotateSpeed = 30.f;
+	Movement->RotationRate = FRotator(0.f, RotateSpeed, 0.f);
 }
 
 // Called when the game starts or when spawned
 void AFountain::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ABLOG_S(Warning);
+	ABLOG(Warning, TEXT("Actor Name : %s, ID : %d, Location X : %.3f"), *GetName(), ID, GetActorLocation().X);
+}
+
+void AFountain::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	ABLOG_S(Warning);
+}
+
+void AFountain::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	ABLOG_S(Warning);
 }
 
 // Called every frame
 void AFountain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//AddActorLocalRotation(FRotator(0.f, RotateSpeed * DeltaTime, 0.f));
 }
 
