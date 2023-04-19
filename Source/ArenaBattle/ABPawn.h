@@ -4,7 +4,12 @@
 
 #include "ArenaBattle.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include "InputActionValue.h"
 #include "ABPawn.generated.h"
+
+class UInputAction;
+class UInputMappingContext;
 
 UCLASS()
 class ARENABATTLE_API AABPawn : public APawn
@@ -28,4 +33,28 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void Move(const FInputActionValue& Value);
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = Collision)
+	UCapsuleComponent* Capsule;
+
+	UPROPERTY(VisibleAnywhere, Category = Visula)
+	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+	UFloatingPawnMovement* Movement;
+
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputAction* MoveAction;
 };
