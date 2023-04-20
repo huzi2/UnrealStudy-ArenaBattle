@@ -54,6 +54,10 @@ AABCharacter::AABCharacter()
 	if (IA_VIEWCHANGE.Succeeded())
 		ViewChangeAction = IA_VIEWCHANGE.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_JUMP(TEXT("/Game/ThirdPerson/Input/Actions/IA_Jump.IA_Jump"));
+	if (IA_JUMP.Succeeded())
+		JumpAction = IA_JUMP.Object;
+
 	SetControlMode(CurrentControlMode);
 }
 
@@ -102,6 +106,7 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AABCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AABCharacter::Look);
 		Input->BindAction(ViewChangeAction, ETriggerEvent::Triggered, this, &AABCharacter::ViewChange);
+		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	}
 }
 

@@ -62,6 +62,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	UInputAction* ViewChangeAction;
 
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputAction* JumpAction;
+
 private:
 	EControlMode CurrentControlMode;
 	FVector DirectionToMove;
