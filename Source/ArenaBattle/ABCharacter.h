@@ -3,22 +3,27 @@
 #pragma once
 
 #include "ArenaBattle.h"
-#include "GameFramework/Pawn.h"
-#include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "ABPawn.generated.h"
+#include "ABCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class ARENABATTLE_API AABPawn : public APawn
+class ARENABATTLE_API AABCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	enum class EControlMode
+	{
+		GTA,
+		DIABLO
+	};
+
 public:
-	// Sets default values for this pawn's properties
-	AABPawn();
+	// Sets default values for this character's properties
+	AABCharacter();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,25 +32,18 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void PostInitializeComponents() override;
-	virtual void PossessedBy(AController* NewController) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
 	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void ViewChange();
+
+	void SetControlMode(EControlMode NewControlMode);
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Collision)
-	UCapsuleComponent* Capsule;
-
-	UPROPERTY(VisibleAnywhere, Category = Visula)
-	USkeletalMeshComponent* Mesh;
-
-	UPROPERTY(VisibleAnywhere, Category = Movement)
-	UFloatingPawnMovement* Movement;
-
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
 
@@ -57,4 +55,19 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	UInputAction* MoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputAction* LookAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputAction* ViewChangeAction;
+
+private:
+	EControlMode CurrentControlMode;
+	FVector DirectionToMove;
+
+	float ArmLengthTo;
+	FRotator ArmRotationTo;
+	float ArmLengthSpeed;
+	float ArmRotationSpeed;
 };
