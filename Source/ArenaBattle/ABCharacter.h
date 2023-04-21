@@ -9,6 +9,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class UABAnimInstance;
 
 UCLASS()
 class ARENABATTLE_API AABCharacter : public ACharacter
@@ -32,16 +33,25 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void ViewChange();
+	void Attack();
 
 	void SetControlMode(EControlMode NewControlMode);
+
+	void AttackStartComboState();
+	void AttackEndComboState();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -64,6 +74,27 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	UInputAction* JumpAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input)
+	UInputAction* AttackAction;
+
+	UPROPERTY()
+	UABAnimInstance* ABAnim;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool CanNextCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsComboInputOn;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxCombo;
 
 private:
 	EControlMode CurrentControlMode;

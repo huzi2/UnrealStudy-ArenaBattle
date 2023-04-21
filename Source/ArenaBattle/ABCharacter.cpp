@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "ABAnimInstance.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -14,6 +15,11 @@ AABCharacter::AABCharacter()
 	, ArmRotationTo(FRotator::ZeroRotator)
 	, ArmLengthSpeed(3.f)
 	, ArmRotationSpeed(10.f)
+	, IsAttacking(false)
+	, CanNextCombo(false)
+	, IsComboInputOn(false)
+	, CurrentCombo(0)
+	, MaxCombo(4)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -58,6 +64,10 @@ AABCharacter::AABCharacter()
 	if (IA_JUMP.Succeeded())
 		JumpAction = IA_JUMP.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_ATTACK(TEXT("/Game/ThirdPerson/Input/Actions/IA_Attack.IA_Attack"));
+	if (IA_ATTACK.Succeeded())
+		AttackAction = IA_ATTACK.Object;
+
 	SetControlMode(CurrentControlMode);
 }
 
@@ -66,7 +76,7 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (APlayerController* PlayerController = CastChecked<APlayerController>(Controller))
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -96,6 +106,26 @@ void AABCharacter::Tick(float DeltaTime)
 	}
 }
 
+void AABCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	ABAnim = CastChecked<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	ABCHECK(ABAnim);
+
+	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+	ABAnim->OnNextAttackCheck.AddLambda([this]() -> void {
+			ABLOG(Warning, TEXT("OnNextAttackCheck"));
+			CanNextCombo = false;
+
+			if (IsComboInputOn)
+			{
+				AttackStartComboState();
+				ABAnim->JumpToAttackMontageSection(CurrentCombo);
+			}
+		});
+}
+
 // Called to bind functionality to input
 void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -107,7 +137,16 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AABCharacter::Look);
 		Input->BindAction(ViewChangeAction, ETriggerEvent::Triggered, this, &AABCharacter::ViewChange);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		Input->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABCharacter::Attack);
 	}
+}
+
+void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	ABCHECK(IsAttacking);
+	ABCHECK(CurrentCombo > 0);
+	IsAttacking = false;
+	AttackEndComboState();
 }
 
 void AABCharacter::Move(const FInputActionValue& Value)
@@ -161,6 +200,24 @@ void AABCharacter::ViewChange()
 	}
 }
 
+void AABCharacter::Attack()
+{
+	if (IsAttacking)
+	{
+		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		if (CanNextCombo)
+			IsComboInputOn = true;
+	}
+	else
+	{
+		ABCHECK(CurrentCombo == 0);
+		AttackStartComboState();
+		ABAnim->PlayAttackMontage();
+		ABAnim->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
+}
+
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
@@ -199,5 +256,20 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 	default:
 		break;
 	}
+}
+
+void AABCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+	ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+void AABCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = false;
+	CurrentCombo = 0;
 }
 
