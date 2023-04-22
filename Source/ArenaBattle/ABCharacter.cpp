@@ -7,32 +7,38 @@
 #include "InputMappingContext.h"
 #include "ABAnimInstance.h"
 #include "ABWeapon.h"
+#include "ABCharacterStatComponent.h"
+#include "ABCharacterWidget.h"
 #include "DrawDebugHelpers.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
-	: CurrentControlMode(EControlMode::DIABLO)
-	, DirectionToMove(FVector::ZeroVector)
-	, ArmLengthTo(0.f)
-	, ArmRotationTo(FRotator::ZeroRotator)
-	, ArmLengthSpeed(3.f)
-	, ArmRotationSpeed(10.f)
-	, IsAttacking(false)
+	: IsAttacking(false)
 	, CanNextCombo(false)
 	, IsComboInputOn(false)
 	, CurrentCombo(0)
 	, MaxCombo(4)
 	, AttackRange(200.f)
 	, AttackRadius(50.f)
+	, CurrentControlMode(EControlMode::DIABLO)
+	, DirectionToMove(FVector::ZeroVector)
+	, ArmLengthTo(0.f)
+	, ArmRotationTo(FRotator::ZeroRotator)
+	, ArmLengthSpeed(3.f)
+	, ArmRotationSpeed(10.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	CharacterStat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("CHARACTERSTAT"));
+	HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
+	HPBarWidget->SetupAttachment(GetMesh());
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 	SpringArm->TargetArmLength = 400.f;
@@ -75,6 +81,15 @@ AABCharacter::AABCharacter()
 	SetControlMode(CurrentControlMode);
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCharacter"));
+
+	HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
+	HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/Book/UI/UI_HPBar.UI_HPBar_C"));
+	if (UI_HUD.Succeeded())
+	{
+		HPBarWidget->SetWidgetClass(UI_HUD.Class);
+		HPBarWidget->SetDrawSize(FVector2D(150.f, 50.f));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -87,6 +102,10 @@ void AABCharacter::BeginPlay()
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	auto CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+	if (CharacterWidget)
+		CharacterWidget->BindCharacterStat(CharacterStat);
 }
 
 // Called every frame
@@ -135,6 +154,12 @@ void AABCharacter::PostInitializeComponents()
 		});
 
 	ABAnim->OnAttackHitCheck.AddUObject(this, &AABCharacter::AttackCheck);
+
+	CharacterStat->OnHPIsZero.AddLambda([this]() -> void {
+			ABLOG(Warning, TEXT("OnHPIsZero"));
+			ABAnim->SetDeadAnim();
+			SetActorEnableCollision(false);
+		});
 }
 
 inline float AABCharacter::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -142,11 +167,7 @@ inline float AABCharacter::TakeDamage(float DamageAmount, const FDamageEvent& Da
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
 
-	if (FinalDamage > 0.f)
-	{
-		ABAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-	}
+	CharacterStat->SetDamage(FinalDamage);
 
 	return FinalDamage;
 }
@@ -351,7 +372,7 @@ void AABCharacter::AttackCheck()
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
 
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(50.f, DamageEvent, GetController(), this);
+			HitResult.GetActor()->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
 		}
 	}
 }

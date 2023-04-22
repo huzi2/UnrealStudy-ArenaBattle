@@ -10,6 +10,8 @@ class UInputMappingContext;
 class UInputAction;
 class UABAnimInstance;
 class AABWeapon;
+class UABCharacterStatComponent;
+class UWidgetComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -67,6 +69,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	UWidgetComponent* HPBarWidget;
+
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	UInputMappingContext* DefaultMappingContext;
 
@@ -87,6 +92,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	AABWeapon* CurrentWeapon;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	UABCharacterStatComponent* CharacterStat;
 
 	UPROPERTY()
 	UABAnimInstance* ABAnim;
