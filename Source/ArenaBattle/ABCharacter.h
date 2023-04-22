@@ -4,14 +4,13 @@
 
 #include "ArenaBattle.h"
 #include "GameFramework/Character.h"
-#include "InputActionValue.h"
 #include "ABCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 class UABAnimInstance;
-struct FDamageEvent;
-class AController;
+class AABWeapon;
+struct FInputActionValue;
 
 UCLASS()
 class ARENABATTLE_API AABCharacter : public ACharacter
@@ -40,6 +39,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	bool CanSetWeapon();
+	void SetWeapon(AABWeapon* NewWeapon);
 
 private:
 	UFUNCTION()
@@ -81,6 +84,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Input)
 	UInputAction* AttackAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	AABWeapon* CurrentWeapon;
 
 	UPROPERTY()
 	UABAnimInstance* ABAnim;

@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "ABAnimInstance.h"
+#include "ABWeapon.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -162,6 +163,24 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		Input->BindAction(ViewChangeAction, ETriggerEvent::Triggered, this, &AABCharacter::ViewChange);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		Input->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABCharacter::Attack);
+	}
+}
+
+bool AABCharacter::CanSetWeapon()
+{
+	return (CurrentWeapon == nullptr);
+}
+
+void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
+{
+	ABCHECK(NewWeapon && !CurrentWeapon);
+
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	if (NewWeapon)
+	{
+		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		NewWeapon->SetOwner(this);
+		CurrentWeapon = NewWeapon;
 	}
 }
 
