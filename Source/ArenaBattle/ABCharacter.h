@@ -14,6 +14,8 @@ class UABCharacterStatComponent;
 class UWidgetComponent;
 struct FInputActionValue;
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
 UCLASS()
 class ARENABATTLE_API AABCharacter : public ACharacter
 {
@@ -22,7 +24,8 @@ class ARENABATTLE_API AABCharacter : public ACharacter
 	enum class EControlMode
 	{
 		GTA,
-		DIABLO
+		DIABLO,
+		NPC
 	};
 
 public:
@@ -38,6 +41,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -45,6 +49,7 @@ public:
 public:
 	bool CanSetWeapon();
 	void SetWeapon(AABWeapon* NewWeapon);
+	void Attack();
 
 private:
 	UFUNCTION()
@@ -54,13 +59,15 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void ViewChange();
-	void Attack();
 
 	void SetControlMode(EControlMode NewControlMode);
 
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+
+public:
+	FOnAttackEndDelegate OnAttackEnd;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)

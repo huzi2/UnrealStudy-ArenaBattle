@@ -9,6 +9,7 @@
 #include "ABWeapon.h"
 #include "ABCharacterStatComponent.h"
 #include "ABCharacterWidget.h"
+#include "ABAIController.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 
@@ -90,6 +91,9 @@ AABCharacter::AABCharacter()
 		HPBarWidget->SetWidgetClass(UI_HUD.Class);
 		HPBarWidget->SetDrawSize(FVector2D(150.f, 50.f));
 	}
+
+	AIControllerClass = AABAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 // Called when the game starts or when spawned
@@ -172,6 +176,22 @@ inline float AABCharacter::TakeDamage(float DamageAmount, const FDamageEvent& Da
 	return FinalDamage;
 }
 
+void AABCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (IsPlayerControlled())
+	{
+		SetControlMode(EControlMode::DIABLO);
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
+	else
+	{
+		SetControlMode(EControlMode::NPC);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
+}
+
 // Called to bind functionality to input
 void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -205,12 +225,31 @@ void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
 	}
 }
 
+void AABCharacter::Attack()
+{
+	if (IsAttacking)
+	{
+		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		if (CanNextCombo)
+			IsComboInputOn = true;
+	}
+	else
+	{
+		ABCHECK(CurrentCombo == 0);
+		AttackStartComboState();
+		ABAnim->PlayAttackMontage();
+		ABAnim->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
+}
+
 void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	ABCHECK(IsAttacking);
 	ABCHECK(CurrentCombo > 0);
 	IsAttacking = false;
 	AttackEndComboState();
+	OnAttackEnd.Broadcast();
 }
 
 void AABCharacter::Move(const FInputActionValue& Value)
@@ -264,24 +303,6 @@ void AABCharacter::ViewChange()
 	}
 }
 
-void AABCharacter::Attack()
-{
-	if (IsAttacking)
-	{
-		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
-		if (CanNextCombo)
-			IsComboInputOn = true;
-	}
-	else
-	{
-		ABCHECK(CurrentCombo == 0);
-		AttackStartComboState();
-		ABAnim->PlayAttackMontage();
-		ABAnim->JumpToAttackMontageSection(CurrentCombo);
-		IsAttacking = true;
-	}
-}
-
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
@@ -316,6 +337,12 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
+		break;
+	case EControlMode::NPC:
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
 		break;
 	default:
 		break;
