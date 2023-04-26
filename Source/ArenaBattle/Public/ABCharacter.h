@@ -13,6 +13,7 @@ class AABWeapon;
 class UABCharacterStatComponent;
 class UWidgetComponent;
 struct FInputActionValue;
+struct FStreamableHandle;
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
@@ -65,6 +66,8 @@ private:
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+
+	void OnAssetLoadCompleted();
 
 public:
 	FOnAttackEndDelegate OnAttackEnd;
@@ -135,4 +138,7 @@ private:
 	FRotator ArmRotationTo;
 	float ArmLengthSpeed;
 	float ArmRotationSpeed;
+
+	FSoftObjectPath CharacterAssetToLoad;
+	TSharedPtr<FStreamableHandle> AssetStreamingHandle;
 };

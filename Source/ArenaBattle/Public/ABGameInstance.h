@@ -5,6 +5,7 @@
 #include "ArenaBattle.h"
 #include "Engine/DataTable.h"
 #include "Engine/GameInstance.h"
+#include "Engine/StreamableManager.h"
 #include "ABGameInstance.generated.h"
 
 USTRUCT(BlueprintType)
@@ -47,6 +48,9 @@ private:
 
 public:
 	FABCharacterData* GetABCharacterData(int32 Level);
+
+public:
+	FStreamableManager StreamableManager;
 
 private:
 	UPROPERTY()

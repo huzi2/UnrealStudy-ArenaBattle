@@ -10,6 +10,8 @@
 #include "ABCharacterStatComponent.h"
 #include "ABCharacterWidget.h"
 #include "ABAIController.h"
+#include "ABGameInstance.h"
+#include "ABCharacterSetting.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 
@@ -28,6 +30,7 @@ AABCharacter::AABCharacter()
 	, ArmRotationTo(FRotator::ZeroRotator)
 	, ArmLengthSpeed(3.f)
 	, ArmRotationSpeed(10.f)
+	, CharacterAssetToLoad(FSoftObjectPath(nullptr))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -94,6 +97,15 @@ AABCharacter::AABCharacter()
 
 	AIControllerClass = AABAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	auto DefaultSetting = GetDefault<UABCharacterSetting>();
+	if (DefaultSetting->CharacterAssets.Num() > 0)
+	{
+		for (auto CharacterAsset : DefaultSetting->CharacterAssets)
+		{
+			ABLOG(Warning, TEXT("Character Asset : %s"), *CharacterAsset.ToString());
+		}
+	}
 }
 
 // Called when the game starts or when spawned
@@ -110,6 +122,17 @@ void AABCharacter::BeginPlay()
 	auto CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 	if (CharacterWidget)
 		CharacterWidget->BindCharacterStat(CharacterStat);
+
+	if (!IsPlayerControlled())
+	{
+		auto DefaultSetting = GetDefault<UABCharacterSetting>();
+		int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+		CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
+
+		auto ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
+		if (ABGameInstance)
+			AssetStreamingHandle = ABGameInstance->StreamableManager.RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AABCharacter::OnAssetLoadCompleted));
+	}
 }
 
 // Called every frame
@@ -402,5 +425,13 @@ void AABCharacter::AttackCheck()
 			HitResult.GetActor()->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
 		}
 	}
+}
+
+void AABCharacter::OnAssetLoadCompleted()
+{
+	AssetStreamingHandle->ReleaseHandle();
+	TSoftObjectPtr<USkeletalMesh> LoadedAssetPath(CharacterAssetToLoad);
+	if (LoadedAssetPath.IsValid())
+		GetMesh()->SetSkeletalMesh(LoadedAssetPath.Get());
 }
 
