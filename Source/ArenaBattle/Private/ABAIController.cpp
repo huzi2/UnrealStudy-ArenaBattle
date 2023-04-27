@@ -24,15 +24,23 @@ AABAIController::AABAIController()
 void AABAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+}
 
+void AABAIController::RunAI()
+{
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
-		BlackboardComp->SetValueAsVector(HomePosKey, InPawn->GetActorLocation());
+		BlackboardComp->SetValueAsVector(HomePosKey, GetPawn()->GetActorLocation());
 		if (!RunBehaviorTree(BTAsset))
-		{
 			ABLOG(Error, TEXT("AIController couldn't run behavior tree!"));
-		}
 	}
+}
+
+void AABAIController::StopAI()
+{
+	auto BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (BehaviorTreeComponent)
+		BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
 }
 

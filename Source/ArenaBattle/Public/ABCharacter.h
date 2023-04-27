@@ -12,6 +12,8 @@ class UABAnimInstance;
 class AABWeapon;
 class UABCharacterStatComponent;
 class UWidgetComponent;
+class AABAIController;
+class AABPlayerController;
 struct FInputActionValue;
 struct FStreamableHandle;
 
@@ -51,6 +53,9 @@ public:
 	bool CanSetWeapon();
 	void SetWeapon(AABWeapon* NewWeapon);
 	void Attack();
+	void SetCharacterState(ECharacterState NewState);
+	ECharacterState GetCharacterState() const;
+	int32 GetExp() const;
 
 private:
 	UFUNCTION()
@@ -130,6 +135,21 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	float AttackRadius;
 
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	ECharacterState CurrentState;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	bool bIsPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, Meta = (AllowPrivateAccess = true))
+	float DeadTimer;
+
+	UPROPERTY()
+	AABAIController* ABAIController;
+
+	UPROPERTY()
+	AABPlayerController* ABPlayerController;
+
 private:
 	EControlMode CurrentControlMode;
 	FVector DirectionToMove;
@@ -141,4 +161,8 @@ private:
 
 	FSoftObjectPath CharacterAssetToLoad;
 	TSharedPtr<FStreamableHandle> AssetStreamingHandle;
+
+	int32 AssetIndex;
+
+	FTimerHandle DeadTimerHandle;
 };

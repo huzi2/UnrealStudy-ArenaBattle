@@ -74,15 +74,20 @@ void UABCharacterStatComponent::SetHP(float NewHP)
 	}
 }
 
-float UABCharacterStatComponent::GetAttack()
+float UABCharacterStatComponent::GetAttack() const
 {
 	ABCHECK(CurrentStatData, 0.f);
 	return CurrentStatData->Attack;
 }
 
-float UABCharacterStatComponent::GetHPRatio()
+float UABCharacterStatComponent::GetHPRatio() const
 {
 	ABCHECK(CurrentStatData, 0.f);
 	return (CurrentStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.f : (CurrentHP / CurrentStatData->MaxHP);
+}
+
+int32 UABCharacterStatComponent::GetDropExp() const
+{
+	return CurrentStatData->DropExp;
 }
 
