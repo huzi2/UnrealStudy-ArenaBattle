@@ -55,9 +55,6 @@ AABSection::AABSection()
 		NewGateTrigger->SetRelativeLocation(FVector(70.f, 0.f, 250.f));
 		NewGateTrigger->SetCollisionProfileName(TEXT("ABTrigger"));
 		GateTriggers.Add(NewGateTrigger);
-
-		//NewGateTrigger->OnComponentBeginOverlap.AddDynamic(this, &AABSection::OnGateBeginOverlap);
-		NewGateTrigger->ComponentTags.Add(GateSocket);
 	}
 }
 

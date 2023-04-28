@@ -56,6 +56,8 @@ public:
 	void SetCharacterState(ECharacterState NewState);
 	ECharacterState GetCharacterState() const;
 	int32 GetExp() const;
+	float GetFinalAttackRange() const;
+	float GetFinalAttackDamage() const;
 
 private:
 	UFUNCTION()

@@ -14,6 +14,7 @@
 #include "ABPlayerController.h"
 #include "ABPlayerState.h"
 #include "ABHUDWidget.h"
+#include "ABGameMode.h"
 #include "ABCharacterSetting.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
@@ -25,7 +26,7 @@ AABCharacter::AABCharacter()
 	, IsComboInputOn(false)
 	, CurrentCombo(0)
 	, MaxCombo(4)
-	, AttackRange(200.f)
+	, AttackRange(80.f)
 	, AttackRadius(50.f)
 	, DeadTimer(5.f)
 	, CurrentControlMode(EControlMode::DIABLO)
@@ -142,7 +143,11 @@ void AABCharacter::BeginPlay()
 
 	auto DefaultSetting = GetDefault<UABCharacterSetting>();
 	if (bIsPlayer)
-		AssetIndex = 4;
+	{
+		auto ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
+		ABCHECK(ABPlayerState);
+		AssetIndex = ABPlayerState->GetCharacterIndex();
+	}
 	else
 		AssetIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
 
@@ -242,12 +247,19 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 bool AABCharacter::CanSetWeapon()
 {
-	return (CurrentWeapon == nullptr);
+	return true;
 }
 
 void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
 {
-	ABCHECK(NewWeapon && !CurrentWeapon);
+	ABCHECK(NewWeapon);
+
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+	}
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (NewWeapon)
@@ -293,6 +305,15 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 			auto ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
 			ABCHECK(ABPlayerState);
 			CharacterStat->SetNewLevel(ABPlayerState->GetCharacterLevel());
+		}
+		else
+		{
+			auto ABGameMode = Cast<AABGameMode>(GetWorld()->GetAuthGameMode());
+			ABCHECK(ABGameMode);
+			int32 TargetLevel = FMath::CeilToInt(static_cast<float>(ABGameMode->GetScore()) * 0.8f);
+			int32 FinalLevel = FMath::Clamp<int32>(TargetLevel, 1, 20);
+			ABLOG(Warning, TEXT("New NPC Level : %d"), FinalLevel);
+			CharacterStat->SetNewLevel(FinalLevel);
 		}
 
 		SetActorHiddenInGame(true);
@@ -343,7 +364,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda([this]() -> void
 			{
 				if (bIsPlayer)
-					ABPlayerController->RestartLevel();
+					ABPlayerController->ShowResultUI();
 				else
 					Destroy();
 			}), DeadTimer, false);
@@ -361,6 +382,18 @@ ECharacterState AABCharacter::GetCharacterState() const
 int32 AABCharacter::GetExp() const
 {
 	return CharacterStat->GetDropExp();
+}
+
+float AABCharacter::GetFinalAttackRange() const
+{
+	return (CurrentWeapon) ? CurrentWeapon->GetAttackRange() : AttackRange;
+}
+
+float AABCharacter::GetFinalAttackDamage() const
+{
+	float AttackDamage = (CurrentWeapon) ? CharacterStat->GetAttack() + CurrentWeapon->GetAttackDamage() : CharacterStat->GetAttack();
+	float AttackModifier  = (CurrentWeapon) ? CurrentWeapon->GetAttackModifier() : 1.f;
+	return AttackDamage * AttackModifier;
 }
 
 void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -486,13 +519,15 @@ void AABCharacter::AttackEndComboState()
 
 void AABCharacter::AttackCheck()
 {
+	float FinalAttackRange = GetFinalAttackRange();
+
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		GetActorLocation() + GetActorForwardVector() * FinalAttackRange,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel2,
 		FCollisionShape::MakeSphere(AttackRadius),
@@ -501,9 +536,9 @@ void AABCharacter::AttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector TraceVec = GetActorForwardVector() * FinalAttackRange;
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	float HalfHeight = FinalAttackRange * 0.5f + AttackRadius;
 	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
 	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
 	float DebugLifeTime = 5.f;
@@ -519,7 +554,7 @@ void AABCharacter::AttackCheck()
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
 
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
+			HitResult.GetActor()->TakeDamage(GetFinalAttackDamage(), DamageEvent, GetController(), this);
 		}
 	}
 }

@@ -25,8 +25,12 @@ public:
 
 public:
 	void AddScore(AABPlayerController* ScoredPlayer);
+	int32 GetScore() const;
 
 private:
 	UPROPERTY()
 	AABGameStateBase* ABGameState;
+
+	UPROPERTY()
+	int32 ScoreToClear;
 };

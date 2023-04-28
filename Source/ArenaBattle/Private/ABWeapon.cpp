@@ -5,6 +5,11 @@
 
 // Sets default values
 AABWeapon::AABWeapon()
+	: AttackRange(150.f)
+	, AttackDamageMin(-2.5f)
+	, AttackDamageMax(10.f)
+	, AttackModifierMin(0.85f)
+	, AttackModifierMax(1.25f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -24,6 +29,9 @@ void AABWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AttackDamage = FMath::RandRange(AttackDamageMin, AttackDamageMax);
+	AttackModifier = FMath::RandRange(AttackModifierMin, AttackModifierMax);
+	ABLOG(Warning, TEXT("Weapon Damage : %f, Modifier : %f"), AttackDamage, AttackModifier);
 }
 
 // Called every frame
@@ -31,5 +39,20 @@ void AABWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+float AABWeapon::GetAttackRange() const
+{
+	return AttackRange;
+}
+
+float AABWeapon::GetAttackDamage() const
+{
+	return AttackDamage;
+}
+
+float AABWeapon::GetAttackModifier() const
+{
+	return AttackModifier;
 }
 

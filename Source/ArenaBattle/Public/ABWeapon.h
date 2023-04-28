@@ -23,7 +23,34 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	float GetAttackRange() const;
+	float GetAttackDamage() const;
+	float GetAttackModifier() const;
+
+protected:
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = Attack)
+	float AttackDamage;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = Attack)
+	float AttackModifier;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	float AttackRange;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	float AttackDamageMin;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	float AttackDamageMax;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	float AttackModifierMin;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	float AttackModifierMax;
 };

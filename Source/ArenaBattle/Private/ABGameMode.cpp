@@ -8,6 +8,7 @@
 #include "ABGameStateBase.h"
 
 AABGameMode::AABGameMode()
+	: ScoreToClear(2)
 {
 	DefaultPawnClass = AABCharacter::StaticClass();
 	PlayerControllerClass = AABPlayerController::StaticClass();
@@ -43,4 +44,26 @@ void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 	}
 
 	ABGameState->AddGameScore();
+
+	if (GetScore() >= ScoreToClear)
+	{
+		ABGameState->SetGameCleared();
+
+		for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+		{
+			(*It)->TurnOff();
+		}
+
+		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			const auto ABPlayerController = Cast<AABPlayerController>(It->Get());
+			if (ABPlayerController)
+				ABPlayerController->ShowResultUI();
+		}
+	}
+}
+
+int32 AABGameMode::GetScore() const
+{
+	return ABGameState->GetTotalGameScore();
 }
