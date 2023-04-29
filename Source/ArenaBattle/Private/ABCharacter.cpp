@@ -2,6 +2,7 @@
 
 
 #include "ABCharacter.h"
+#include "VisualLogger/VisualLogger.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -544,6 +545,9 @@ void AABCharacter::AttackCheck()
 	float DebugLifeTime = 5.f;
 
 	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
+
+	UE_VLOG_LOCATION(this, ArenaBattle, Verbose, GetActorLocation(), 50.f, FColor::Blue, TEXT("Attack Position"));
+	UE_VLOG_CAPSULE(this, ArenaBattle, Verbose, GetActorLocation() - GetActorForwardVector() * AttackRadius, HalfHeight, AttackRadius, CapsuleRot, DrawColor, TEXT("Attack Area"));
 
 #endif
 
