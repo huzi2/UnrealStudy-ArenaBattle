@@ -21,7 +21,7 @@ private:
 
 private:
 	UFUNCTION(BlueprintCallable)
-	void NextCharacter(bool bForward = true);
+	void NextCharacter(const bool bForward = true);
 
 	UFUNCTION()
 	void OnPrevClicked();
@@ -33,10 +33,10 @@ private:
 	void OnConfirmClicked();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	int32 CurrentIndex;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	int32 MaxIndex;
 
 private:

@@ -20,7 +20,6 @@
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 
-// Sets default values
 AABCharacter::AABCharacter()
 	: IsAttacking(false)
 	, CanNextCombo(false)
@@ -39,7 +38,6 @@ AABCharacter::AABCharacter()
 	, CharacterAssetToLoad(FSoftObjectPath(nullptr))
 	, AssetIndex(4)
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
@@ -57,37 +55,53 @@ AABCharacter::AABCharacter()
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
+	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
+	}
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("/Game/Book/Animations/WarriorAnimBlueprint.WarriorAnimBlueprint_C"));
 	if (WARRIOR_ANIM.Succeeded())
+	{
 		GetMesh()->SetAnimInstanceClass(WARRIOR_ANIM.Class);
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_DEFAULT(TEXT("/Game/ThirdPerson/Input/IMC_Default.IMC_Default"));
 	if (IMC_DEFAULT.Succeeded())
+	{
 		DefaultMappingContext = IMC_DEFAULT.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_MOVE(TEXT("/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move"));
 	if (IA_MOVE.Succeeded())
+	{
 		MoveAction = IA_MOVE.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_LOOK(TEXT("/Game/ThirdPerson/Input/Actions/IA_Look.IA_Look"));
 	if (IA_LOOK.Succeeded())
+	{
 		LookAction = IA_LOOK.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_VIEWCHANGE(TEXT("/Game/ThirdPerson/Input/Actions/IA_ViewChange.IA_ViewChange"));
 	if (IA_VIEWCHANGE.Succeeded())
+	{
 		ViewChangeAction = IA_VIEWCHANGE.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_JUMP(TEXT("/Game/ThirdPerson/Input/Actions/IA_Jump.IA_Jump"));
 	if (IA_JUMP.Succeeded())
+	{
 		JumpAction = IA_JUMP.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_ATTACK(TEXT("/Game/ThirdPerson/Input/Actions/IA_Attack.IA_Attack"));
 	if (IA_ATTACK.Succeeded())
+	{
 		AttackAction = IA_ATTACK.Object;
+	}
 
 	SetControlMode(CurrentControlMode);
 
@@ -105,7 +119,7 @@ AABCharacter::AABCharacter()
 	AIControllerClass = AABAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	auto DefaultSetting = GetDefault<UABCharacterSetting>();
+	const UABCharacterSetting* DefaultSetting = GetDefault<UABCharacterSetting>();
 	if (DefaultSetting->CharacterAssets.Num() > 0)
 	{
 		for (auto CharacterAsset : DefaultSetting->CharacterAssets)
@@ -119,7 +133,6 @@ AABCharacter::AABCharacter()
 	SetCanBeDamaged(false);
 }
 
-// Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -127,7 +140,9 @@ void AABCharacter::BeginPlay()
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
 	}
 
 	bIsPlayer = IsPlayerControlled();
@@ -142,24 +157,25 @@ void AABCharacter::BeginPlay()
 		ABCHECK(ABAIController);
 	}
 
-	auto DefaultSetting = GetDefault<UABCharacterSetting>();
+	const UABCharacterSetting* DefaultSetting = GetDefault<UABCharacterSetting>();
 	if (bIsPlayer)
 	{
-		auto ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
+		AABPlayerState* ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
 		ABCHECK(ABPlayerState);
 		AssetIndex = ABPlayerState->GetCharacterIndex();
 	}
 	else
+	{
 		AssetIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+	}
 
 	CharacterAssetToLoad = DefaultSetting->CharacterAssets[AssetIndex];
-	auto ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
+	UABGameInstance* ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
 	ABCHECK(ABGameInstance);
 	AssetStreamingHandle = ABGameInstance->StreamableManager.RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AABCharacter::OnAssetLoadCompleted));
 	SetCharacterState(ECharacterState::LOADING);
 }
 
-// Called every frame
 void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -193,7 +209,8 @@ void AABCharacter::PostInitializeComponents()
 	ABCHECK(ABAnim);
 
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-	ABAnim->OnNextAttackCheck.AddLambda([this]() -> void {
+	ABAnim->OnNextAttackCheck.AddLambda([&]()
+		{
 			ABLOG(Warning, TEXT("OnNextAttackCheck"));
 			CanNextCombo = false;
 
@@ -217,21 +234,15 @@ float AABCharacter::TakeDamage(float DamageAmount, const FDamageEvent& DamageEve
 	{
 		if (EventInstigator->IsPlayerController())
 		{
-			auto ABPlayerController1 = Cast<AABPlayerController>(EventInstigator);
-			ABCHECK(ABPlayerController1, 0.f);
-			ABPlayerController1->NPCKill(this);
+			AABPlayerController* EventInstigatorController = Cast<AABPlayerController>(EventInstigator);
+			ABCHECK(EventInstigatorController, 0.f);
+			EventInstigatorController->NPCKill(this);
 		}
 	}
 
 	return FinalDamage;
 }
 
-void AABCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-}
-
-// Called to bind functionality to input
 void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -246,11 +257,6 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 }
 
-bool AABCharacter::CanSetWeapon()
-{
-	return true;
-}
-
 void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
 {
 	ABCHECK(NewWeapon);
@@ -261,10 +267,10 @@ void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
 		CurrentWeapon->Destroy();
 		CurrentWeapon = nullptr;
 	}
-
-	FName WeaponSocket(TEXT("hand_rSocket"));
+	
 	if (NewWeapon)
 	{
+		FName WeaponSocket(TEXT("hand_rSocket"));
 		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 		NewWeapon->SetOwner(this);
 		CurrentWeapon = NewWeapon;
@@ -277,7 +283,9 @@ void AABCharacter::Attack()
 	{
 		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
 		if (CanNextCombo)
+		{
 			IsComboInputOn = true;
+		}
 	}
 	else
 	{
@@ -289,7 +297,7 @@ void AABCharacter::Attack()
 	}
 }
 
-void AABCharacter::SetCharacterState(ECharacterState NewState)
+void AABCharacter::SetCharacterState(const ECharacterState NewState)
 {
 	ABCHECK(CurrentState != NewState);
 	CurrentState = NewState;
@@ -303,13 +311,13 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 
 			ABPlayerController->GetHUDWidget()->BindCharacterStat(CharacterStat);
 
-			auto ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
+			AABPlayerState* ABPlayerState = Cast<AABPlayerState>(GetPlayerState());
 			ABCHECK(ABPlayerState);
 			CharacterStat->SetNewLevel(ABPlayerState->GetCharacterLevel());
 		}
 		else
 		{
-			auto ABGameMode = Cast<AABGameMode>(GetWorld()->GetAuthGameMode());
+			AABGameMode* ABGameMode = Cast<AABGameMode>(GetWorld()->GetAuthGameMode());
 			ABCHECK(ABGameMode);
 			int32 TargetLevel = FMath::CeilToInt(static_cast<float>(ABGameMode->GetScore()) * 0.8f);
 			int32 FinalLevel = FMath::Clamp<int32>(TargetLevel, 1, 20);
@@ -327,12 +335,12 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		HPBarWidget->SetHiddenInGame(false);
 		SetCanBeDamaged(true);
 
-		CharacterStat->OnHPIsZero.AddLambda([this]() -> void
+		CharacterStat->OnHPIsZero.AddLambda([this]()
 			{
 				SetCharacterState(ECharacterState::DEAD);
 			});
 
-		auto CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+		UABCharacterWidget* CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 		ABCHECK(CharacterWidget);
 		CharacterWidget->BindCharacterStat(CharacterStat);
 
@@ -357,17 +365,10 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		ABAnim->SetDeadAnim();
 		SetCanBeDamaged(false);
 
-		if (bIsPlayer)
-			DisableInput(ABPlayerController);
-		else
-			ABAIController->StopAI();
-
-		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda([this]() -> void
+		bIsPlayer ? DisableInput(ABPlayerController) : ABAIController->StopAI();
+		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda([this]()
 			{
-				if (bIsPlayer)
-					ABPlayerController->ShowResultUI();
-				else
-					Destroy();
+				bIsPlayer ? ABPlayerController->ShowResultUI() : Destroy();
 			}), DeadTimer, false);
 		break;
 	default:
@@ -375,25 +376,25 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 	}
 }
 
-ECharacterState AABCharacter::GetCharacterState() const
+const ECharacterState AABCharacter::GetCharacterState() const
 {
 	return CurrentState;
 }
 
-int32 AABCharacter::GetExp() const
+const int32 AABCharacter::GetExp() const
 {
 	return CharacterStat->GetDropExp();
 }
 
-float AABCharacter::GetFinalAttackRange() const
+const float AABCharacter::GetFinalAttackRange() const
 {
-	return (CurrentWeapon) ? CurrentWeapon->GetAttackRange() : AttackRange;
+	return CurrentWeapon ? CurrentWeapon->GetAttackRange() : AttackRange;
 }
 
-float AABCharacter::GetFinalAttackDamage() const
+const float AABCharacter::GetFinalAttackDamage() const
 {
-	float AttackDamage = (CurrentWeapon) ? CharacterStat->GetAttack() + CurrentWeapon->GetAttackDamage() : CharacterStat->GetAttack();
-	float AttackModifier  = (CurrentWeapon) ? CurrentWeapon->GetAttackModifier() : 1.f;
+	const float AttackDamage = CurrentWeapon ? CharacterStat->GetAttack() + CurrentWeapon->GetAttackDamage() : CharacterStat->GetAttack();
+	const float AttackModifier  = CurrentWeapon ? CurrentWeapon->GetAttackModifier() : 1.f;
 	return AttackDamage * AttackModifier;
 }
 
@@ -457,7 +458,7 @@ void AABCharacter::ViewChange()
 	}
 }
 
-void AABCharacter::SetControlMode(EControlMode NewControlMode)
+void AABCharacter::SetControlMode(const EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
 
@@ -520,12 +521,12 @@ void AABCharacter::AttackEndComboState()
 
 void AABCharacter::AttackCheck()
 {
-	float FinalAttackRange = GetFinalAttackRange();
+	const float FinalAttackRange = GetFinalAttackRange();
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	bool bResult = GetWorld()->SweepSingleByChannel(
+	const bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * FinalAttackRange,
@@ -537,12 +538,12 @@ void AABCharacter::AttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	FVector TraceVec = GetActorForwardVector() * FinalAttackRange;
-	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = FinalAttackRange * 0.5f + AttackRadius;
-	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
-	float DebugLifeTime = 5.f;
+	const FVector TraceVec = GetActorForwardVector() * FinalAttackRange;
+	const FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	const float HalfHeight = FinalAttackRange * 0.5f + AttackRadius;
+	const FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	const FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	const float DebugLifeTime = 5.f;
 
 	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 
@@ -572,4 +573,3 @@ void AABCharacter::OnAssetLoadCompleted()
 	GetMesh()->SetSkeletalMesh(LoadedAssetPath.Get());
 	SetCharacterState(ECharacterState::READY);
 }
-

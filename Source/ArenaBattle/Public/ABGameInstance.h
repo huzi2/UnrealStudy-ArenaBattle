@@ -40,14 +40,11 @@ class ARENABATTLE_API UABGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UABGameInstance();
 
-private:
-	virtual void Init() override;
-
 public:
-	FABCharacterData* GetABCharacterData(int32 Level);
+	FABCharacterData* GetABCharacterData(const int32 Level);
 
 public:
 	FStreamableManager StreamableManager;

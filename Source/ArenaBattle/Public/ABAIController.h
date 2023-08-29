@@ -16,11 +16,8 @@ class ARENABATTLE_API AABAIController : public AAIController
 {
 	GENERATED_BODY()
 	
-public:
-	AABAIController();
-
 private:
-	virtual void OnPossess(APawn* InPawn) override;
+	AABAIController();
 
 public:
 	void RunAI();

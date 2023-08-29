@@ -14,7 +14,7 @@ class ARENABATTLE_API UBTTask_Attack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UBTTask_Attack();
 
 private:

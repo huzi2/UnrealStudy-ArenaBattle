@@ -10,6 +10,7 @@
 void UABHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbHP")));
 	ABCHECK(HPBar);
 

@@ -14,7 +14,7 @@ class ARENABATTLE_API UBTTask_TurnToTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UBTTask_TurnToTarget();
 
 private:

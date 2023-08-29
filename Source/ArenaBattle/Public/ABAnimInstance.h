@@ -17,10 +17,10 @@ class ARENABATTLE_API UABAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UABAnimInstance();
 
-public:
+private:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 private:
@@ -34,25 +34,25 @@ public:
 	void SetDeadAnim() { IsDead = true; }
 
 	void PlayAttackMontage();
-	void JumpToAttackMontageSection(int32 NewSection);
+	void JumpToAttackMontageSection(const int32 NewSection);
 
 private:
-	FName GetAttackMontageSectionName(int32 Section);
+	const FName GetAttackMontageSectionName(const int32 Section);
 
 public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool IsInAir;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool IsDead;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
 };

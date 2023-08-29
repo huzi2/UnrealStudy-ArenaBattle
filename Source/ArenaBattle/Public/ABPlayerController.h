@@ -21,35 +21,31 @@ class ARENABATTLE_API AABPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
+private:
 	AABPlayerController();
 	
-protected:
+private:
 	virtual void BeginPlay() override;
-
-public:
-	virtual void PostInitializeComponents() override;
-	virtual void OnPossess(APawn* aPawn) override;
 	virtual void SetupInputComponent() override;
 
 public:
 	UABHUDWidget* GetHUDWidget() const;
 	void NPCKill(AABCharacter* KilledNPC) const;
 	void AddGameScore() const;
-	void ChangeInputMode(bool bGameMode = true);
+	void ChangeInputMode(const bool bGameMode = true);
 	void ShowResultUI();
 
 private:
 	void OnGamePause();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UABHUDWidget> HUDWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UABGameplayWidget> MenuWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UABGameplayResultWidget> ResultWidgetClass;
 
 private:
@@ -65,10 +61,10 @@ private:
 	UPROPERTY()
 	AABPlayerState* ABPlayerState;
 
-	UPROPERTY(VisibleAnywhere, Category = Input)
+	UPROPERTY(VisibleAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
 
-	UPROPERTY(VisibleAnywhere, Category = Input)
+	UPROPERTY(VisibleAnywhere, Category = "Input")
 	UInputAction* GmaePauseAction;
 
 private:

@@ -13,18 +13,11 @@ class ARENABATTLE_API AABItemBox : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+private:
 	AABItemBox();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+private:
 	virtual void PostInitializeComponents() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 private:
 	UFUNCTION()
@@ -34,15 +27,15 @@ private:
 	void OnEffectFinished(UParticleSystemComponent* PSystem);
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Box)
+	UPROPERTY(VisibleAnywhere, Category = "Box")
 	UBoxComponent* Trigger;
 
-	UPROPERTY(VisibleAnywhere, Category = Box)
+	UPROPERTY(VisibleAnywhere, Category = "Box")
 	UStaticMeshComponent* Box;
 
-	UPROPERTY(EditInstanceOnly, Category = Effect)
+	UPROPERTY(EditInstanceOnly, Category = "Effect")
 	UParticleSystemComponent* Effect;
 
-	UPROPERTY(EditInstanceOnly, Category = Box)
+	UPROPERTY(EditInstanceOnly, Category = "Box")
 	TSubclassOf<AABWeapon> WeaponItemClass;
 };

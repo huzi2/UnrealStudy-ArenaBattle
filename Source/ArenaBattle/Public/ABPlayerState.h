@@ -17,23 +17,23 @@ class ARENABATTLE_API AABPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	AABPlayerState();
 
 public:
-	int32 GetGameScore() const;
-	int32 GetGameHighScore() const;
-	int32 GetCharacterLevel() const;
-	int32 GetCharacterIndex() const;
-	float GetExpRatio() const;
-	bool AddExp(int32 IncomeExp);
+	const int32 GetGameScore() const;
+	const int32 GetGameHighScore() const;
+	const int32 GetCharacterLevel() const;
+	const int32 GetCharacterIndex() const;
+	const float GetExpRatio() const;
+	const bool AddExp(const int32 IncomeExp);
 	void AddGameScore();
 
 	void InitPlayerData();
 	void SavePlayerData();
 
 private:
-	void SetCharacterLevel(int32 NewCharacterLevel);
+	void SetCharacterLevel(const int32 NewCharacterLevel);
 
 public:
 	FOnPlayerStateChangedDelegate OnPlayerStateChanged;

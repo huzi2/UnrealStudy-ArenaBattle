@@ -16,7 +16,7 @@ class ARENABATTLE_API AABGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
+private:
 	AABGameMode();
 
 public:
@@ -25,12 +25,12 @@ public:
 
 public:
 	void AddScore(AABPlayerController* ScoredPlayer);
-	int32 GetScore() const;
+	const int32 GetScore() const;
 
 private:
 	UPROPERTY()
 	AABGameStateBase* ABGameState;
 
-	UPROPERTY()
+private:
 	int32 ScoreToClear;
 };

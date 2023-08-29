@@ -15,17 +15,15 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NdoeMemory);
 
-	auto ABCharacter = Cast<AABCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!ABCharacter)
-		return EBTNodeResult::Failed;
+	AABCharacter* ABCharacter = Cast<AABCharacter>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ABCharacter) return EBTNodeResult::Failed;
 
-	auto Target = Cast<AABCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AABAIController::TargetKey));
-	if(!Target)
-		return EBTNodeResult::Failed;
+	AABCharacter* Target = Cast<AABCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AABAIController::TargetKey));
+	if(!Target) return EBTNodeResult::Failed;
 
 	FVector LookVector = Target->GetActorLocation() - ABCharacter->GetActorLocation();
 	LookVector.Z = 0.f;
-	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
+	const FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
 	ABCharacter->SetActorRotation(FMath::RInterpTo(ABCharacter->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 2.f));
 
 	return EBTNodeResult::Succeeded;

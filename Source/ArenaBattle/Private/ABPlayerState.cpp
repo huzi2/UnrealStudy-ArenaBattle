@@ -15,40 +15,38 @@ AABPlayerState::AABPlayerState()
 {
 }
 
-int32 AABPlayerState::GetGameScore() const
+const int32 AABPlayerState::GetGameScore() const
 {
 	return GameScore;
 }
 
-int32 AABPlayerState::GetGameHighScore() const
+const int32 AABPlayerState::GetGameHighScore() const
 {
 	return GameHighScore;
 }
 
-int32 AABPlayerState::GetCharacterLevel() const
+const int32 AABPlayerState::GetCharacterLevel() const
 {
 	return CharacterLevel;
 }
 
-int32 AABPlayerState::GetCharacterIndex() const
+const int32 AABPlayerState::GetCharacterIndex() const
 {
 	return CharacterIndex;
 }
 
-float AABPlayerState::GetExpRatio() const
+const float AABPlayerState::GetExpRatio() const
 {
-	if (CurrentStatData->NextExp <= KINDA_SMALL_NUMBER)
-		return 0.f;
+	if (CurrentStatData->NextExp <= KINDA_SMALL_NUMBER) return 0.f;
 	
-	float Result = static_cast<float>(Exp) / static_cast<float>(CurrentStatData->NextExp);
+	const float Result = static_cast<float>(Exp) / static_cast<float>(CurrentStatData->NextExp);
 	ABLOG(Warning, TEXT("Ratio : %f, Current : %d, Next : %d"), Result, Exp, CurrentStatData->NextExp);
 	return Result;
 }
 
-bool AABPlayerState::AddExp(int32 IncomeExp)
+const bool AABPlayerState::AddExp(const int32 IncomeExp)
 {
-	if (CurrentStatData->NextExp == -1)
-		return false;
+	if (CurrentStatData->NextExp == -1) return false;
 
 	bool DidLevelUp = false;
 	Exp += IncomeExp;
@@ -68,7 +66,9 @@ void AABPlayerState::AddGameScore()
 {
 	++GameScore;
 	if (GameScore >= GameHighScore)
+	{
 		GameHighScore = GameScore;
+	}
 
 	OnPlayerStateChanged.Broadcast();
 	SavePlayerData();
@@ -76,9 +76,11 @@ void AABPlayerState::AddGameScore()
 
 void AABPlayerState::InitPlayerData()
 {
-	auto ABSaveGame = Cast<UABSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+	UABSaveGame* ABSaveGame = Cast<UABSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
 	if (!ABSaveGame)
+	{
 		ABSaveGame = GetMutableDefault<UABSaveGame>();
+	}
 
 	SetPlayerName(ABSaveGame->PlayerName);
 	SetCharacterLevel(ABSaveGame->Level);
@@ -99,16 +101,18 @@ void AABPlayerState::SavePlayerData()
 	NewPlayerData->CharacterIndex = CharacterIndex;
 
 	if (!UGameplayStatics::SaveGameToSlot(NewPlayerData, SaveSlotName, 0))
+	{
 		ABLOG(Error, TEXT("SaveGame Error!"));
+	}
 }
 
-void AABPlayerState::SetCharacterLevel(int32 NewCharacterLevel)
+void AABPlayerState::SetCharacterLevel(const int32 NewCharacterLevel)
 {
-	auto ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
-	ABCHECK(ABGameInstance);
+	UABGameInstance* ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
+	if (!ABGameInstance) return;
 
 	CurrentStatData = ABGameInstance->GetABCharacterData(NewCharacterLevel);
-	ABCHECK(CurrentStatData);
+	if (!CurrentStatData) return;
 
 	CharacterLevel = NewCharacterLevel;
 }

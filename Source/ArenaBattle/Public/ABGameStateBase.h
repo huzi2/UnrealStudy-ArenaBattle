@@ -14,15 +14,15 @@ class ARENABATTLE_API AABGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	AABGameStateBase();
 
 public:
-	int32 GetTotalGameScore() const;
+	const int32 GetTotalGameScore() const;
 	void AddGameScore();
 
 	void SetGameCleared();
-	bool IsGameCleared() const;
+	const bool IsGameCleared() const;
 
 private:
 	UPROPERTY(Transient)

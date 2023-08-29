@@ -16,7 +16,7 @@ void UABCharacterSelectWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	CurrentIndex = 0;
-	auto CharacterSetting = GetDefault<UABCharacterSetting>();
+	const UABCharacterSetting* CharacterSetting = GetDefault<UABCharacterSetting>();
 	MaxIndex = CharacterSetting->CharacterAssets.Num();
 
 	for (TActorIterator<ASkeletalMeshActor> It(GetWorld()); It; ++It)
@@ -42,25 +42,31 @@ void UABCharacterSelectWidget::NativeConstruct()
 	ConfirmButton->OnClicked.AddDynamic(this, &UABCharacterSelectWidget::OnConfirmClicked);
 }
 
-void UABCharacterSelectWidget::NextCharacter(bool bForward)
+void UABCharacterSelectWidget::NextCharacter(const bool bForward)
 {
 	bForward ? ++CurrentIndex : --CurrentIndex;
 
 	if (CurrentIndex == -1)
+	{
 		CurrentIndex = MaxIndex - 1;
-	if (CurrentIndex == MaxIndex)
+	}
+	else if (CurrentIndex == MaxIndex)
+	{
 		CurrentIndex = 0;
+	}
 
-	auto CharacterSetting = GetDefault<UABCharacterSetting>();
-	auto AssetRef = CharacterSetting->CharacterAssets[CurrentIndex];
+	const UABCharacterSetting* CharacterSetting = GetDefault<UABCharacterSetting>();
+	FSoftObjectPath AssetRef = CharacterSetting->CharacterAssets[CurrentIndex];
 
-	auto ABGameInstance = GetWorld()->GetGameInstance<UABGameInstance>();
-	ABCHECK(ABGameInstance);
-	ABCHECK(TargetComponent.IsValid());
+	UABGameInstance* ABGameInstance = GetWorld()->GetGameInstance<UABGameInstance>();
+	if (!ABGameInstance) return;
+	if (!TargetComponent.IsValid()) return;
 
 	USkeletalMesh* Asset = ABGameInstance->StreamableManager.LoadSynchronous<USkeletalMesh>(AssetRef);
 	if (Asset)
+	{
 		TargetComponent->SetSkeletalMesh(Asset);
+	}
 }
 
 void UABCharacterSelectWidget::OnPrevClicked()
@@ -75,9 +81,8 @@ void UABCharacterSelectWidget::OnNextClicked()
 
 void UABCharacterSelectWidget::OnConfirmClicked()
 {
-	FString CharacterName = TextBox->GetText().ToString();
-	if (CharacterName.Len() <= 0 || CharacterName.Len() > 10)
-		return;
+	const FString CharacterName = TextBox->GetText().ToString();
+	if (CharacterName.Len() <= 0 || CharacterName.Len() > 10) return;
 
 	UABSaveGame* NewPlayerData = NewObject<UABSaveGame>();
 	NewPlayerData->PlayerName = CharacterName;
@@ -86,9 +91,13 @@ void UABCharacterSelectWidget::OnConfirmClicked()
 	NewPlayerData->HighScore = 0;
 	NewPlayerData->CharacterIndex = CurrentIndex;
 
-	auto ABPlayerState = GetDefault<AABPlayerState>();
+	const AABPlayerState* ABPlayerState = GetDefault<AABPlayerState>();
 	if (UGameplayStatics::SaveGameToSlot(NewPlayerData, ABPlayerState->SaveSlotName, 0))
+	{
 		UGameplayStatics::OpenLevel(GetWorld(), TEXT("Gameplay"));
+	}
 	else
+	{
 		ABLOG(Error, TEXT("SaveGame Error!"));
+	}
 }

@@ -14,7 +14,7 @@ class ARENABATTLE_API UBTService_Detect : public UBTService
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UBTService_Detect();
 
 private:

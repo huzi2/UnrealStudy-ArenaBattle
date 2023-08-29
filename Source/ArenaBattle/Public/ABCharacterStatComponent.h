@@ -16,38 +16,31 @@ class ARENABATTLE_API UABCharacterStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+private:
 	UABCharacterStatComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+private:
 	virtual void InitializeComponent() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 public:
-	void SetNewLevel(int32 NewLevel);
-	void SetDamage(float NewDamage);
-	void SetHP(float NewHP);
-	float GetAttack() const;
-	float GetHPRatio() const;
-	int32 GetDropExp() const;
+	void SetNewLevel(const int32 NewLevel);
+	void SetDamage(const float NewDamage);
+	void SetHP(const float NewHP);
+	const float GetAttack() const;
+	const float GetHPRatio() const;
+	const int32 GetDropExp() const;
 
 private:
-	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	int32 Level;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
-
-private:
-	FABCharacterData* CurrentStatData;
 
 public:
 	FOnHPIsZeroDelegate OnHPIsZero;
 	FOnHPChangeDelegate OnHPChanged;
+
+private:
+	FABCharacterData* CurrentStatData;
 };

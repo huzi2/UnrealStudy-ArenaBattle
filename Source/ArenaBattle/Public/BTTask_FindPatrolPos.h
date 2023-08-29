@@ -14,7 +14,7 @@ class ARENABATTLE_API UBTTask_FindPatrolPos : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-public:
+private:
 	UBTTask_FindPatrolPos();
 
 private:

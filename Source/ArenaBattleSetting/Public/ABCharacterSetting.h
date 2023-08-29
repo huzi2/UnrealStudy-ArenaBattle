@@ -14,7 +14,7 @@ class ARENABATTLESETTING_API UABCharacterSetting : public UObject
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UABCharacterSetting();
 
 public:

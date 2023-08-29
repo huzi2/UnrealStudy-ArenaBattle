@@ -13,12 +13,7 @@ UABGameInstance::UABGameInstance()
 	ABCHECK(ABCharacterTable->GetRowMap().Num() > 0);
 }
 
-void UABGameInstance::Init()
+FABCharacterData* UABGameInstance::GetABCharacterData(const int32 Level)
 {
-	Super::Init();
-}
-
-FABCharacterData* UABGameInstance::GetABCharacterData(int32 Level)
-{
-	return ABCharacterTable->FindRow<FABCharacterData>(*FString::FromInt(Level), TEXT(""));
+	return ABCharacterTable ? ABCharacterTable->FindRow<FABCharacterData>(*FString::FromInt(Level), TEXT("")) : nullptr;
 }

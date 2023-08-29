@@ -4,27 +4,12 @@
 #include "ABCharacterStatComponent.h"
 #include "ABGameInstance.h"
 
-// Sets default values for this component's properties
 UABCharacterStatComponent::UABCharacterStatComponent()
 	: Level(1)
 	, CurrentStatData(nullptr)
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
-
-	// ...
-}
-
-
-// Called when the game starts
-void UABCharacterStatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
 }
 
 void UABCharacterStatComponent::InitializeComponent()
@@ -33,18 +18,9 @@ void UABCharacterStatComponent::InitializeComponent()
 	SetNewLevel(Level);
 }
 
-
-// Called every frame
-void UABCharacterStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UABCharacterStatComponent::SetNewLevel(const int32 NewLevel)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UABCharacterStatComponent::SetNewLevel(int32 NewLevel)
-{
-	auto ABGameInstance = Cast<UABGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UABGameInstance* ABGameInstance = Cast<UABGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	ABCHECK(ABGameInstance);
 	CurrentStatData = ABGameInstance->GetABCharacterData(NewLevel);
@@ -54,16 +30,18 @@ void UABCharacterStatComponent::SetNewLevel(int32 NewLevel)
 		SetHP(CurrentStatData->MaxHP);
 	}
 	else
+	{
 		ABLOG(Error, TEXT("Level (%d) data doesn't exist"), NewLevel);
+	}
 }
 
-void UABCharacterStatComponent::SetDamage(float NewDamage)
+void UABCharacterStatComponent::SetDamage(const float NewDamage)
 {
 	ABCHECK(CurrentStatData);
 	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.f, CurrentStatData->MaxHP));
 }
 
-void UABCharacterStatComponent::SetHP(float NewHP)
+void UABCharacterStatComponent::SetHP(const float NewHP)
 {
 	CurrentHP = NewHP;
 	OnHPChanged.Broadcast();
@@ -74,20 +52,19 @@ void UABCharacterStatComponent::SetHP(float NewHP)
 	}
 }
 
-float UABCharacterStatComponent::GetAttack() const
+const float UABCharacterStatComponent::GetAttack() const
 {
 	ABCHECK(CurrentStatData, 0.f);
 	return CurrentStatData->Attack;
 }
 
-float UABCharacterStatComponent::GetHPRatio() const
+const float UABCharacterStatComponent::GetHPRatio() const
 {
 	ABCHECK(CurrentStatData, 0.f);
 	return (CurrentStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.f : (CurrentHP / CurrentStatData->MaxHP);
 }
 
-int32 UABCharacterStatComponent::GetDropExp() const
+const int32 UABCharacterStatComponent::GetDropExp() const
 {
 	return CurrentStatData->DropExp;
 }
-

@@ -18,19 +18,17 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	if (!ControllingPawn)
-		return;
+	if (!ControllingPawn) return;
 
 	UWorld* World = ControllingPawn->GetWorld();
-	FVector Center = ControllingPawn->GetActorLocation();
-	float DetectRadius = 600.f;
+	if (!World) return;
 
-	if (!World)
-		return;
+	const FVector Center = ControllingPawn->GetActorLocation();
+	static constexpr float DetectRadius = 600.f;
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(NAME_None, false, ControllingPawn);
-	bool bResult = World->OverlapMultiByChannel(
+	const bool bResult = World->OverlapMultiByChannel(
 		OverlapResults,
 		Center,
 		FQuat::Identity,
@@ -41,7 +39,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	if (bResult)
 	{
-		for (auto OverlapResult : OverlapResults)
+		for (const FOverlapResult& OverlapResult : OverlapResults)
 		{
 			AABCharacter* ABCharacter = Cast<AABCharacter>(OverlapResult.GetActor());
 			if (ABCharacter && ABCharacter->GetController()->IsPlayerController())
@@ -55,7 +53,9 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		}
 	}
 	else
+	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AABAIController::TargetKey, nullptr);
+	}
 
 	DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 }

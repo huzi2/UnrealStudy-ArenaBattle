@@ -11,20 +11,26 @@ void UABGameplayWidget::NativeConstruct()
 
 	ResumeButton = Cast<UButton>(GetWidgetFromName(TEXT("btnResume")));
 	if (ResumeButton)
+	{
 		ResumeButton->OnClicked.AddDynamic(this, &UABGameplayWidget::OnResumeClicked);
+	}
 
 	ReturnToTitleButton = Cast<UButton>(GetWidgetFromName(TEXT("btnReturnToTitle")));
 	if (ReturnToTitleButton)
+	{
 		ReturnToTitleButton->OnClicked.AddDynamic(this, &UABGameplayWidget::OnReturnToTitleClicked);
+	}
 
 	RetryGameButton = Cast<UButton>(GetWidgetFromName(TEXT("btnRetryGame")));
 	if (RetryGameButton)
+	{
 		RetryGameButton->OnClicked.AddDynamic(this, &UABGameplayWidget::OnRetryGameClicked);
+	}
 }
 
 void UABGameplayWidget::OnResumeClicked()
 {
-	auto ABPlayerController = Cast<AABPlayerController>(GetOwningPlayer());
+	AABPlayerController* ABPlayerController = Cast<AABPlayerController>(GetOwningPlayer());
 	ABCHECK(ABPlayerController);
 
 	RemoveFromParent();
@@ -40,7 +46,7 @@ void UABGameplayWidget::OnReturnToTitleClicked()
 
 void UABGameplayWidget::OnRetryGameClicked()
 {
-	auto ABPlayerController = Cast<AABPlayerController>(GetOwningPlayer());
+	AABPlayerController* ABPlayerController = Cast<AABPlayerController>(GetOwningPlayer());
 	ABCHECK(ABPlayerController);
 
 	ABPlayerController->RestartLevel();

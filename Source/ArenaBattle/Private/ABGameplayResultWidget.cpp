@@ -11,11 +11,11 @@ void UABGameplayResultWidget::NativeConstruct()
 	
 	ABCHECK(CurrentGameState.IsValid());
 
-	auto Result = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtResult")));
+	UTextBlock* Result = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtResult")));
 	ABCHECK(Result);
 	Result->SetText(FText::FromString(CurrentGameState->IsGameCleared() ? TEXT("Mission Complete") : TEXT("Mission Failed")));
 
-	auto TotalScore = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtTotalScore")));
+	UTextBlock* TotalScore = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtTotalScore")));
 	ABCHECK(TotalScore);
 	TotalScore->SetText(FText::FromString(FString::FromInt(CurrentGameState->GetTotalGameScore())));
 }

@@ -16,23 +16,32 @@ AABPlayerController::AABPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UABHUDWidget> UI_HUD_C(TEXT("/Game/Book/UI/UI_HUD.UI_HUD_C"));
 	if (UI_HUD_C.Succeeded())
+	{
 		HUDWidgetClass = UI_HUD_C.Class;
-
+	}
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_DEFAULT(TEXT("/Game/ThirdPerson/Input/IMC_Default.IMC_Default"));
 	if (IMC_DEFAULT.Succeeded())
+	{
 		DefaultMappingContext = IMC_DEFAULT.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_GAME_PAUSE(TEXT("/Game/ThirdPerson/Input/Actions/IA_GamePause.IA_GamePause"));
 	if (IA_GAME_PAUSE.Succeeded())
+	{
 		GmaePauseAction = IA_GAME_PAUSE.Object;
+	}
 
 	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("/Game/Book/UI/UI_MENU.UI_MENU_C"));
 	if (UI_MENU_C.Succeeded())
+	{
 		MenuWidgetClass = UI_MENU_C.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<UABGameplayResultWidget> UI_RESULT_C(TEXT("/Game/Book/UI/UI_Result.UI_Result_C"));
 	if (UI_RESULT_C.Succeeded())
+	{
 		ResultWidgetClass = UI_RESULT_C.Class;
+	}
 }
 
 void AABPlayerController::BeginPlay()
@@ -54,17 +63,9 @@ void AABPlayerController::BeginPlay()
 	ABPlayerState->OnPlayerStateChanged.Broadcast();
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
+	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
-}
-
-void AABPlayerController::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-}
-
-void AABPlayerController::OnPossess(APawn* aPawn)
-{
-	Super::OnPossess(aPawn);
+	}
 }
 
 void AABPlayerController::SetupInputComponent()
@@ -72,7 +73,9 @@ void AABPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
 		Input->BindAction(GmaePauseAction, ETriggerEvent::Triggered, this, &AABPlayerController::OnGamePause);
+	}
 }
 
 UABHUDWidget* AABPlayerController::GetHUDWidget() const
@@ -90,7 +93,7 @@ void AABPlayerController::AddGameScore() const
 	ABPlayerState->AddGameScore();
 }
 
-void AABPlayerController::ChangeInputMode(bool bGameMode)
+void AABPlayerController::ChangeInputMode(const bool bGameMode)
 {
 	if (bGameMode)
 	{
@@ -106,7 +109,7 @@ void AABPlayerController::ChangeInputMode(bool bGameMode)
 
 void AABPlayerController::ShowResultUI()
 {
-	auto ABGameState = Cast<AABGameStateBase>(UGameplayStatics::GetGameState(this));
+	AABGameStateBase* ABGameState = Cast<AABGameStateBase>(UGameplayStatics::GetGameState(this));
 	ABCHECK(ABGameState);
 	ResultWidget->BindGameState(ABGameState);
 

@@ -15,13 +15,12 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	auto ABCharacter = Cast<AABCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!ABCharacter)
-		return EBTNodeResult::Failed;
-
+	AABCharacter* ABCharacter = Cast<AABCharacter>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ABCharacter) return EBTNodeResult::Failed;
+		
 	ABCharacter->Attack();
 	IsAttacking = true;
-	ABCharacter->OnAttackEnd.AddLambda([this]() -> void
+	ABCharacter->OnAttackEnd.AddLambda([&]()
 		{
 			IsAttacking = false;
 		}
@@ -34,6 +33,8 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSecondes);
 	
-	if(!IsAttacking)
+	if (!IsAttacking)
+	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

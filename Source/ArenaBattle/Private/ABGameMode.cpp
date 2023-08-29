@@ -19,6 +19,7 @@ AABGameMode::AABGameMode()
 void AABGameMode::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
 	ABGameState = Cast<AABGameStateBase>(GameState);
 }
 
@@ -26,16 +27,20 @@ void AABGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	auto ABPlayerState = Cast<AABPlayerState>(NewPlayer->PlayerState);
+	if (!NewPlayer) return;
+
+	AABPlayerState* ABPlayerState = Cast<AABPlayerState>(NewPlayer->PlayerState);
 	ABCHECK(ABPlayerState);
 	ABPlayerState->InitPlayerData();
 }
 
 void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 {
+	if (!ScoredPlayer) return;
+
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		const auto ABPlayerController = Cast<AABPlayerController>(It->Get());
+		AABPlayerController* ABPlayerController = Cast<AABPlayerController>(It->Get());
 		if (ABPlayerController && ScoredPlayer == ABPlayerController)
 		{
 			ABPlayerController->AddGameScore();
@@ -56,14 +61,16 @@ void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 
 		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 		{
-			const auto ABPlayerController = Cast<AABPlayerController>(It->Get());
+			AABPlayerController* ABPlayerController = Cast<AABPlayerController>(It->Get());
 			if (ABPlayerController)
+			{
 				ABPlayerController->ShowResultUI();
+			}
 		}
 	}
 }
 
-int32 AABGameMode::GetScore() const
+const int32 AABGameMode::GetScore() const
 {
 	return ABGameState->GetTotalGameScore();
 }

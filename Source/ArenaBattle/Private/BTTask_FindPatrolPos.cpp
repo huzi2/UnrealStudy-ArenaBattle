@@ -15,15 +15,13 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	auto ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	if (!ControllingPawn)
-		return EBTNodeResult::Failed;
+	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+	if (!ControllingPawn) return EBTNodeResult::Failed;
 
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(ControllingPawn->GetWorld());
-	if (!NavSystem)
-		return EBTNodeResult::Failed;
-
-	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(AABAIController::HomePosKey);
+	if (!NavSystem) return EBTNodeResult::Failed;
+		
+	const FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(AABAIController::HomePosKey);
 	FNavLocation NextPatrol;
 
 	if (NavSystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, 500.f, NextPatrol))

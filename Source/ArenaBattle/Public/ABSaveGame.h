@@ -14,7 +14,7 @@ class ARENABATTLE_API UABSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 	
-public:
+private:
 	UABSaveGame();
 
 public:

@@ -19,20 +19,17 @@ private:
 		COMPLETE
 	};
 	
-public:	
-	// Sets default values for this actor's properties
+private:
 	AABSection();
 
-protected:
+private:
 	virtual void OnConstruction(const FTransform& Transform) override;
-
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
 private:
-	void SetState(ESectionState NewState);
-	void OperateGates(bool bOpen = true);
+	void SetState(const ESectionState NewState);
+	void OperateGates(const bool bOpen = true);
 	void OnNPCSpawn();
 
 private:
@@ -46,25 +43,25 @@ private:
 	void OnKeyNPCDestroyed(AActor* DestroyedActor);
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Category = "Mesh", Meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(VisibleAnywhere, Category = Trigger, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Category = "Trigger", Meta = (AllowPrivateAccess = true))
 	UBoxComponent* Trigger;
 
-	UPROPERTY(VisibleAnywhere, Category = Mesh, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Category = "Mesh", Meta = (AllowPrivateAccess = true))
 	TArray<UStaticMeshComponent*> GateMeshes;
 
-	UPROPERTY(VisibleAnywhere, Category = Trigger, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Category = "Trigger", Meta = (AllowPrivateAccess = true))
 	TArray<UBoxComponent*> GateTriggers;
 
-	UPROPERTY(EditAnywhere, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool bNoBattle;
 
-	UPROPERTY(EditAnywhere, Category = Spawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Spawn", Meta = (AllowPrivateAccess = true))
 	float EnemySpawnTime;
 
-	UPROPERTY(EditAnywhere, Category = Spawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Spawn", Meta = (AllowPrivateAccess = true))
 	float ItemBoxSpawnTime;
 
 private:

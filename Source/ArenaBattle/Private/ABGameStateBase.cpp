@@ -9,7 +9,7 @@ AABGameStateBase::AABGameStateBase()
 {
 }
 
-int32 AABGameStateBase::GetTotalGameScore() const
+const int32 AABGameStateBase::GetTotalGameScore() const
 {
 	return TotalGameScore;
 }
@@ -24,7 +24,7 @@ void AABGameStateBase::SetGameCleared()
 	bGameCleared = true;
 }
 
-bool AABGameStateBase::IsGameCleared() const
+const bool AABGameStateBase::IsGameCleared() const
 {
 	return bGameCleared;
 }

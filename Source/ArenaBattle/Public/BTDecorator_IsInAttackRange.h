@@ -14,7 +14,7 @@ class ARENABATTLE_API UBTDecorator_IsInAttackRange : public UBTDecorator
 {
 	GENERATED_BODY()
 
-public:
+private:
 	UBTDecorator_IsInAttackRange();
 
 private:
