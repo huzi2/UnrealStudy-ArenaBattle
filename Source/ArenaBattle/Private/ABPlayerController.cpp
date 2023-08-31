@@ -78,18 +78,17 @@ void AABPlayerController::SetupInputComponent()
 	}
 }
 
-UABHUDWidget* AABPlayerController::GetHUDWidget() const
-{
-	return HUDWidget;
-}
-
 void AABPlayerController::NPCKill(AABCharacter* KilledNPC) const
 {
+	if (!ABPlayerState) return;
+
 	ABPlayerState->AddExp(KilledNPC->GetExp());
 }
 
 void AABPlayerController::AddGameScore() const
 {
+	if (!ABPlayerState) return;
+
 	ABPlayerState->AddGameScore();
 }
 

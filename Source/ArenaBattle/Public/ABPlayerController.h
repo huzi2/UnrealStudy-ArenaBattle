@@ -29,7 +29,7 @@ private:
 	virtual void SetupInputComponent() override;
 
 public:
-	UABHUDWidget* GetHUDWidget() const;
+	FORCEINLINE UABHUDWidget* GetHUDWidget() const { return HUDWidget; }
 	void NPCKill(AABCharacter* KilledNPC) const;
 	void AddGameScore() const;
 	void ChangeInputMode(const bool bGameMode = true);

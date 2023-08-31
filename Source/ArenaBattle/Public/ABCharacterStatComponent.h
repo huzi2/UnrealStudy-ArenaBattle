@@ -26,9 +26,9 @@ public:
 	void SetNewLevel(const int32 NewLevel);
 	void SetDamage(const float NewDamage);
 	void SetHP(const float NewHP);
-	const float GetAttack() const;
-	const float GetHPRatio() const;
-	const int32 GetDropExp() const;
+	float GetAttack() const;
+	float GetHPRatio() const;
+	int32 GetDropExp() const;
 
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))

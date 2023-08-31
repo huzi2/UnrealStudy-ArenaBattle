@@ -25,7 +25,7 @@ public:
 
 public:
 	void AddScore(AABPlayerController* ScoredPlayer);
-	const int32 GetScore() const;
+	int32 GetScore() const;
 
 private:
 	UPROPERTY()

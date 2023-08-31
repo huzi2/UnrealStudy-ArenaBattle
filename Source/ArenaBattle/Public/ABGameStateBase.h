@@ -18,11 +18,11 @@ private:
 	AABGameStateBase();
 
 public:
-	const int32 GetTotalGameScore() const;
-	void AddGameScore();
+	FORCEINLINE int32 GetTotalGameScore() const { return TotalGameScore; };
+	FORCEINLINE void AddGameScore() { ++TotalGameScore; }
 
-	void SetGameCleared();
-	const bool IsGameCleared() const;
+	FORCEINLINE void SetGameCleared() { bGameCleared = true; }
+	FORCEINLINE bool IsGameCleared() const { return bGameCleared; }
 
 private:
 	UPROPERTY(Transient)

@@ -70,7 +70,7 @@ void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 	}
 }
 
-const int32 AABGameMode::GetScore() const
+int32 AABGameMode::GetScore() const
 {
-	return ABGameState->GetTotalGameScore();
+	return ABGameState ? ABGameState->GetTotalGameScore() : 0;
 }

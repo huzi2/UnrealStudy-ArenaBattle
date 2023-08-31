@@ -376,22 +376,17 @@ void AABCharacter::SetCharacterState(const ECharacterState NewState)
 	}
 }
 
-const ECharacterState AABCharacter::GetCharacterState() const
+int32 AABCharacter::GetExp() const
 {
-	return CurrentState;
+	return CharacterStat ? CharacterStat->GetDropExp() : 0;
 }
 
-const int32 AABCharacter::GetExp() const
-{
-	return CharacterStat->GetDropExp();
-}
-
-const float AABCharacter::GetFinalAttackRange() const
+float AABCharacter::GetFinalAttackRange() const
 {
 	return CurrentWeapon ? CurrentWeapon->GetAttackRange() : AttackRange;
 }
 
-const float AABCharacter::GetFinalAttackDamage() const
+float AABCharacter::GetFinalAttackDamage() const
 {
 	const float AttackDamage = CurrentWeapon ? CharacterStat->GetAttack() + CurrentWeapon->GetAttackDamage() : CharacterStat->GetAttack();
 	const float AttackModifier  = CurrentWeapon ? CurrentWeapon->GetAttackModifier() : 1.f;

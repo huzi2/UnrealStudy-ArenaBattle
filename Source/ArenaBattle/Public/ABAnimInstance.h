@@ -31,7 +31,7 @@ private:
 	void AnimNotify_NextAttackCheck();
 
 public:
-	void SetDeadAnim() { IsDead = true; }
+	FORCEINLINE void SetDeadAnim() { IsDead = true; }
 
 	void PlayAttackMontage();
 	void JumpToAttackMontageSection(const int32 NewSection);

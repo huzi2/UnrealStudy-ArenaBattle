@@ -18,9 +18,9 @@ private:
 	virtual void BeginPlay() override;
 
 public:
-	const float GetAttackRange() const;
-	const float GetAttackDamage() const;
-	const float GetAttackModifier() const;
+	FORCEINLINE float GetAttackRange() const { return AttackRange; }
+	FORCEINLINE float GetAttackDamage() const { return AttackDamage; }
+	FORCEINLINE float GetAttackModifier() const { return AttackModifier; }
 
 protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")

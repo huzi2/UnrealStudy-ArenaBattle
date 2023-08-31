@@ -8,23 +8,3 @@ AABGameStateBase::AABGameStateBase()
 	, bGameCleared(false)
 {
 }
-
-const int32 AABGameStateBase::GetTotalGameScore() const
-{
-	return TotalGameScore;
-}
-
-void AABGameStateBase::AddGameScore()
-{
-	++TotalGameScore;
-}
-
-void AABGameStateBase::SetGameCleared()
-{
-	bGameCleared = true;
-}
-
-const bool AABGameStateBase::IsGameCleared() const
-{
-	return bGameCleared;
-}

@@ -15,27 +15,7 @@ AABPlayerState::AABPlayerState()
 {
 }
 
-const int32 AABPlayerState::GetGameScore() const
-{
-	return GameScore;
-}
-
-const int32 AABPlayerState::GetGameHighScore() const
-{
-	return GameHighScore;
-}
-
-const int32 AABPlayerState::GetCharacterLevel() const
-{
-	return CharacterLevel;
-}
-
-const int32 AABPlayerState::GetCharacterIndex() const
-{
-	return CharacterIndex;
-}
-
-const float AABPlayerState::GetExpRatio() const
+float AABPlayerState::GetExpRatio() const
 {
 	if (CurrentStatData->NextExp <= KINDA_SMALL_NUMBER) return 0.f;
 	
@@ -44,7 +24,7 @@ const float AABPlayerState::GetExpRatio() const
 	return Result;
 }
 
-const bool AABPlayerState::AddExp(const int32 IncomeExp)
+bool AABPlayerState::AddExp(const int32 IncomeExp)
 {
 	if (CurrentStatData->NextExp == -1) return false;
 

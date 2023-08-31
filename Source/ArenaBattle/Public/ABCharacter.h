@@ -45,10 +45,10 @@ public:
 	void SetWeapon(AABWeapon* NewWeapon);
 	void Attack();
 	void SetCharacterState(const ECharacterState NewState);
-	const ECharacterState GetCharacterState() const;
-	const int32 GetExp() const;
-	const float GetFinalAttackRange() const;
-	const float GetFinalAttackDamage() const;
+	FORCEINLINE ECharacterState GetCharacterState() const { return CurrentState; }
+	int32 GetExp() const;
+	float GetFinalAttackRange() const;
+	float GetFinalAttackDamage() const;
 
 private:
 	UFUNCTION()

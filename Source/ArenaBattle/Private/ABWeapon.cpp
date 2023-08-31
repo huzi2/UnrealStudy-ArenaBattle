@@ -32,18 +32,3 @@ void AABWeapon::BeginPlay()
 	AttackModifier = FMath::RandRange(AttackModifierMin, AttackModifierMax);
 	ABLOG(Warning, TEXT("Weapon Damage : %f, Modifier : %f"), AttackDamage, AttackModifier);
 }
-
-const float AABWeapon::GetAttackRange() const
-{
-	return AttackRange;
-}
-
-const float AABWeapon::GetAttackDamage() const
-{
-	return AttackDamage;
-}
-
-const float AABWeapon::GetAttackModifier() const
-{
-	return AttackModifier;
-}

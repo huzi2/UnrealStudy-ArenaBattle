@@ -21,12 +21,12 @@ private:
 	AABPlayerState();
 
 public:
-	const int32 GetGameScore() const;
-	const int32 GetGameHighScore() const;
-	const int32 GetCharacterLevel() const;
-	const int32 GetCharacterIndex() const;
-	const float GetExpRatio() const;
-	const bool AddExp(const int32 IncomeExp);
+	FORCEINLINE int32 GetGameScore() const { return GameScore; }
+	FORCEINLINE int32 GetGameHighScore() const { return GameHighScore; }
+	FORCEINLINE int32 GetCharacterLevel() const { return CharacterLevel; }
+	FORCEINLINE int32 GetCharacterIndex() const { return CharacterIndex; }
+	float GetExpRatio() const;
+	bool AddExp(const int32 IncomeExp);
 	void AddGameScore();
 
 	void InitPlayerData();
