@@ -18,5 +18,5 @@ private:
 	UBTTask_TurnToTarget();
 
 private:
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NdoeMemory) override;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NdoeMemory) final;
 };

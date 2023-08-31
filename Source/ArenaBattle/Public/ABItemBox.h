@@ -17,7 +17,7 @@ private:
 	AABItemBox();
 
 private:
-	virtual void PostInitializeComponents() override;
+	virtual void PostInitializeComponents() final;
 
 private:
 	UFUNCTION()

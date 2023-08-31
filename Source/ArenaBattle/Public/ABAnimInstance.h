@@ -21,7 +21,7 @@ private:
 	UABAnimInstance();
 
 private:
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) final;
 
 private:
 	UFUNCTION()

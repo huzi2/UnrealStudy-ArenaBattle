@@ -25,8 +25,8 @@ private:
 	AABPlayerController();
 	
 private:
-	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
+	virtual void BeginPlay() final;
+	virtual void SetupInputComponent() final;
 
 public:
 	FORCEINLINE UABHUDWidget* GetHUDWidget() const { return HUDWidget; }

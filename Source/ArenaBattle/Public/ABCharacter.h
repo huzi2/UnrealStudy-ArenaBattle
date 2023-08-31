@@ -35,11 +35,11 @@ private:
 	AABCharacter();
 
 private:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-	virtual void PostInitializeComponents() override;
-	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
+	virtual void PostInitializeComponents() final;
+	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) final;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) final;
 
 public:
 	void SetWeapon(AABWeapon* NewWeapon);

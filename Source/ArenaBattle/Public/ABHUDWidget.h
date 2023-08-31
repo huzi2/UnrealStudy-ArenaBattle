@@ -19,7 +19,7 @@ class ARENABATTLE_API UABHUDWidget : public UUserWidget
 	GENERATED_BODY()
 	
 private:
-	virtual void NativeConstruct() override;
+	virtual void NativeConstruct() final;
 
 public:
 	void BindCharacterStat(UABCharacterStatComponent* CharacterStat);

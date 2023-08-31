@@ -20,7 +20,7 @@ private:
 	UABCharacterStatComponent();
 
 private:
-	virtual void InitializeComponent() override;
+	virtual void InitializeComponent() final;
 
 public:
 	void SetNewLevel(const int32 NewLevel);

@@ -20,8 +20,8 @@ private:
 	AABGameMode();
 
 public:
-	virtual void PostInitializeComponents() override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void PostInitializeComponents() final;
+	virtual void PostLogin(APlayerController* NewPlayer) final;
 
 public:
 	void AddScore(AABPlayerController* ScoredPlayer);

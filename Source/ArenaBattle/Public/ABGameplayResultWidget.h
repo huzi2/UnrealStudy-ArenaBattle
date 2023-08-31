@@ -16,7 +16,7 @@ class ARENABATTLE_API UABGameplayResultWidget : public UABGameplayWidget
 	GENERATED_BODY()
 	
 private:
-	virtual void NativeConstruct() override;
+	virtual void NativeConstruct() final;
 
 public:
 	void BindGameState(AABGameStateBase* GameState);

@@ -15,7 +15,7 @@ private:
 	AABWeapon();
 
 private:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
 
 public:
 	FORCEINLINE float GetAttackRange() const { return AttackRange; }

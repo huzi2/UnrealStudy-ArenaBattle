@@ -17,7 +17,7 @@ class ARENABATTLE_API UABCharacterSelectWidget : public UUserWidget
 	GENERATED_BODY()
 	
 private:
-	virtual void NativeConstruct() override;
+	virtual void NativeConstruct() final;
 
 private:
 	UFUNCTION(BlueprintCallable)

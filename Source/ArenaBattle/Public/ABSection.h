@@ -23,9 +23,9 @@ private:
 	AABSection();
 
 private:
-	virtual void OnConstruction(const FTransform& Transform) override;
-	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
+	virtual void OnConstruction(const FTransform& Transform) final;
+	virtual void BeginPlay() final;
+	virtual void PostInitializeComponents() final;
 
 private:
 	void SetState(const ESectionState NewState);
