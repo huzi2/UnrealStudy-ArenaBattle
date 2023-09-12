@@ -6,6 +6,7 @@
 #include "ABPlayerController.h"
 #include "ABPlayerState.h"
 #include "ABGameStateBase.h"
+#include "EngineUtils.h"
 
 AABGameMode::AABGameMode()
 	: ScoreToClear(2)
@@ -54,7 +55,7 @@ void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 	{
 		ABGameState->SetGameCleared();
 
-		for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+		for (TActorIterator<APawn> It(GetWorld()); It; ++It)
 		{
 			(*It)->TurnOff();
 		}
