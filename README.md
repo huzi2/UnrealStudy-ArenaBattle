@@ -19,6 +19,26 @@
 - 체력바, 게임 일시정지 등 간단한 UI
 - 타이틀 화면, 캐릭터 선택 화면, 결과 화면 등 레벨 전환과 UI
 
+## 기술 스크릿 샷
+
+<img width="1154" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/e1aea0a0-afd7-4a7f-811a-2eb8f479bb62">
+
+애님 노타파이 활용(콤보 공격, 공격 타이밍 )
+
+<img width="584" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/9927178f-ac6d-44e6-b9bc-144a6edd01fe">
+<img width="513" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/14f9ce00-d32e-4183-b411-6fb7e42564d3">
+<img width="633" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/e1c868f8-7bde-4895-9558-c9937c41248b">
+
+애님 블루프린트
+
+<img width="1061" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/4d7bf439-d519-401a-a82f-99a3073638b8">
+
+적 AI 비헤이비어 트리
+
+<img width="313" alt="image" src="https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/e9479696-a05c-40e5-8394-b7f24a8b1906">
+
+캐릭터 능력치 데이터 테이블
+
 ### 참고 자료 : 이득우의 언리얼 C++ 게임 개발의 정석
 
 ### 학습 기간 : 23.04.14 ~ 23.04.29 (2주)
