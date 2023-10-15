@@ -2,6 +2,12 @@
 
 ![ArenaBattle](https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/8657e1ba-d832-44bb-b00f-bd6bf514d49a)
 
+## 프로젝트 영상
+
+![Video Label](http://img.youtube.com/vi/D-lCXkiDpqg/0.jpg)
+
+기술 소개(https://youtu.be/D-lCXkiDpqg)
+
 ## 프로젝트 개요
 언리얼 5.1 C++을 활용한 간단한 쿼터 뷰 액션 게임
 
