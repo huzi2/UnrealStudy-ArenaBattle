@@ -2,14 +2,23 @@
 
 ![ArenaBattle](https://github.com/huzi2/UnrealStudy-ArenaBattle/assets/31639085/8657e1ba-d832-44bb-b00f-bd6bf514d49a)
 
-## 프로젝트 영상
-
 ![Video Label](http://img.youtube.com/vi/D-lCXkiDpqg/0.jpg)
 
-기술 소개(https://youtu.be/D-lCXkiDpqg)
+- [프로젝트 영상](https://youtu.be/D-lCXkiDpqg)
 
 ## 프로젝트 개요
-언리얼 5.1 C++을 활용한 간단한 쿼터 뷰 액션 게임
+
+- 언리얼 5.1 C++을 활용한 간단한 쿼터 뷰 액션 게임
+
+## 제작 기간
+
+- 23.04.14 ~ 23.04.29 (2주)
+
+## 개발 환경
+
+- Unreal Engine 5.1(개발 시작) -> 5.3
+- C++
+- IDE : Visual Studio 2022
 
 ## 사용 기술
 - 프로젝트 모듈의 분리 관리
@@ -45,6 +54,6 @@
 
 캐릭터 능력치 데이터 테이블
 
-### 참고 자료 : 이득우의 언리얼 C++ 게임 개발의 정석
+### 참고 자료
 
-### 학습 기간 : 23.04.14 ~ 23.04.29 (2주)
+- 이득우의 언리얼 C++ 게임 개발의 정석
